@@ -1,0 +1,20 @@
+version: "3.3"
+services:
+  server:
+    restart: always
+    container_name: vaultwarden
+    environment:
+      - ROCKET_TLS={certs="/ssl/vaultwarden.crt",key="/ssl/vaultwarden.key"}
+    volumes:
+      - /docker_data/vaultwarden/ssl/:/ssl/
+      - /docker_data/vaultwarden/:/data/
+#    ports:
+#      - 80:80
+    image: vaultwarden/server:latest
+    networks:
+      vlan600:
+        ipv4_address: 172.16.60.30
+
+networks:
+  vlan600:
+    external: true
