@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  thelounge:
+    restart: unless-stopped
+    container_name: thelounge
+    image: thelounge/thelounge:latest
+    volumes:
+      - ./data:/var/opt/thelounge
+    networks:
+      vlan600:
+        ipv4_address: 172.16.60.10
+networks:
+  vlan600:
+    external: true
