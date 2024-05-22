@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  ytdl_material:
+    environment:
+      ytdl_mongodb_connection_string: 'mongodb://ytdl-mongo-db:27017'
+      ytdl_use_local_db: 'false'
+      write_ytdl_config: 'true'
+    restart: always
+    depends_on:
+      - ytdl-mongo-db
+    volumes:
+      - ./appdata:/app/appdata
+      - /youtube-dl/audio:/app/audio
+      - /youtube-dl/video:/app/video
+      - ./subscriptions:/app/subscriptions
+      - ./users:/app/users
+      - ./delayed-start-file_check.sh:/app/delayed-start-file_check.sh  # Mount the script
+    image: tzahi12345/youtubedl-material:latest
+    entrypoint: ["./delayed-start-file_check.sh"]
+    command: ["npm", "start"]
+    networks:
+      vlan200:
+        ipv4_address: 172.16.20.18
+      youtubedl_bridge:
+
+  ytdl-mongo-db:
+    image: mongo:4
+    logging:
+      driver: "none"
+    container_name: mongo-db
+    restart: always
+    volumes:
+      - ./db/:/data/db
+    networks:
+      - youtubedl_bridge
+
+networks:
+  youtubedl_bridge:
+    driver: bridge
+  vlan200:
+    external: true
