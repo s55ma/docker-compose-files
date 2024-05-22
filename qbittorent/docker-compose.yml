@@ -1,0 +1,39 @@
+# Mount samba share with the same user as ID defined bellow
+# Example: mount -t cifs -o uid=1000,gid=1000,username=******,password=***** //192.168.20.5/Torrents /torrents/Downloads
+
+version: "3.9"
+services:
+  qbittorrent-nox:
+    # for debugging
+    #cap_add:
+    #- SYS_PTRACE
+    restart: unless-stopped
+    container_name: qbittorrent-nox
+    environment:
+      - PAGID=10000
+      - PGID=1000
+      - PUID=1000
+      - QBT_EULA=${QBT_EULA}
+      - QBT_VERSION=${QBT_VERSION}
+      - QBT_WEBUI_PORT=${QBT_WEBUI_PORT}
+      - TZ=Europe/Ljubljana
+      - UMASK=022
+    image: qbittorrentofficial/qbittorrent-nox:${QBT_VERSION}
+    entrypoint: ["./delayed-start-file_check.sh"]
+    command: ["/sbin/tini", "-g", "--", "/entrypoint.sh"]
+    read_only: false
+    stop_grace_period: 30m
+    tmpfs:
+      - /tmp
+    tty: true
+    volumes:
+      - ${QBT_CONFIG_PATH}:/config
+      - ${QBT_DOWNLOADS_PATH}:/downloads
+      - ./delayed-start-file_check.sh:/delayed-start-file_check.sh  # Mount the script
+    networks:
+      vlan50:
+        ipv4_address: 192.168.50.2
+
+networks:
+  vlan50:
+    external: true
