@@ -1,0 +1,32 @@
+version: "3"
+services:
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/data # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=****"
+      - "DIUN_NOTIF_MAIL_USERNAME=****@gmail.com"
+      - "DIUN_NOTIF_MAIL_PASSWORD=****"
+      - "DIUN_NOTIF_MAIL_FROM=****@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=***@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+    restart: unless-stopped
+    networks:
+      vlan200:
+        ipv4_address: 172.16.20.13
+
+networks:
+  vlan200:
+    external: true
