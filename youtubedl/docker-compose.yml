@@ -14,7 +14,7 @@ services:
       - /youtube-dl/audio:/app/audio
       - /youtube-dl/video:/app/video
       - ./subscriptions:/app/subscriptions
-      - ./users:/app/users
+      - /youtube-dl/users:/app/users
       - ./delayed-start-file_check.sh:/app/delayed-start-file_check.sh  # Mount the script
     image: tzahi12345/youtubedl-material:latest
     entrypoint: ["./delayed-start-file_check.sh"]
