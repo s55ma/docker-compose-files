@@ -5,32 +5,37 @@ services:
     image: vikunja/vikunja
     container_name: vikunja
     environment:
-      VIKUNJA_SERVICE_PUBLICURL: http://someurl:3456/
+      VIKUNJA_SERVICE_PUBLICURL: http://172.16.20.32:3456/
       VIKUNJA_DATABASE_HOST: db
-      VIKUNJA_DATABASE_PASSWORD: somepass1
+      VIKUNJA_DATABASE_PASSWORD: huehue
       VIKUNJA_DATABASE_TYPE: mysql
       VIKUNJA_DATABASE_USER: vikunja
       VIKUNJA_DATABASE_DATABASE: vikunja
       VIKUNJA_SERVICE_JWTSECRET: passpass
       VIKUNJA_MAILER_ENABLED: 1
-      VIKUNJA_MAILER_HOST: email.relay.something
-      VIKUNJA_MAILER_PORT: 25
+      VIKUNJA_MAILER_HOST: smtp.gmail.com
+      VIKUNJA_MAILER_PORT: 587
+      VIKUNJA_MAILER_USERNAME: ***@gmail.com
+      VIKUNJA_MAILER_PASSWORD: app_pass
+      VIKUNJA_MAILER_FROMEMAIL: ***@gmail.com
     volumes:
       - ./files:/app/vikunja/files
-    ports:
-      - "3456:3456"
     depends_on:
       - db
     restart: unless-stopped
+    networks:
+      vlan200:
+        ipv4_address: 172.16.20.32
+      vikunja_bridge:
 
   db:
     image: mariadb:10
     container_name: vikunja-db
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_ROOT_PASSWORD: waddab
       MYSQL_USER: vikunja
-      MYSQL_PASSWORD: somepass1
+      MYSQL_PASSWORD: huehue
       MYSQL_DATABASE: vikunja
     volumes:
       - ./db:/var/lib/mysql
@@ -38,3 +43,11 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"]
       interval: 2s
+    networks:
+      - vikunja_bridge
+
+networks:
+  vikunja_bridge:
+    driver: bridge
+  vlan200:
+    external: true
