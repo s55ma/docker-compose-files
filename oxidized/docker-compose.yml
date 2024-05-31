@@ -1,0 +1,22 @@
+---
+version: "3"
+services:
+  oxidized:
+    restart: always
+    image: oxidized/oxidized:latest
+    container_name: oxidized
+    #ports:
+    #  - 8888:8888/tcp
+    environment:
+      CONFIG_RELOAD_INTERVAL: 86400
+      USER: "1000:1000"
+    volumes:
+       - ./data:/home/oxidized/.config/oxidized/
+       - ./data/.ssh/known_hosts:/home/oxidized/.ssh/known_hosts:ro
+    networks:
+      vlan200:
+        ipv4_address: 172.16.20.33
+
+networks:
+  vlan200:
+    external: true
