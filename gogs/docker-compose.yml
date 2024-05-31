@@ -1,0 +1,35 @@
+version: '2'
+services:
+    postgres:
+      image: postgres:9.5
+      restart: always
+      environment:
+       - POSTGRES_USER=dbuser
+       - POSTGRES_PASSWORD=dbpass
+       - POSTGRES_DB=gogs
+      volumes:
+       - ./data/db:/var/lib/postgresql/data
+      networks:
+        - gogs_network
+
+    gogs:
+      image: gogs/gogs:latest
+      restart: always
+      links:
+       - postgres
+      environment:
+       - "RUN_CROND=true"
+      volumes:
+       - ./data/gogs:/data"
+      depends_on:
+       - postgres
+      networks:
+        vlan200:
+          ipv4_address: 172.16.20.34
+        gogs_network:
+
+networks:
+  gogs_network:
+    driver: bridge
+  vlan200:
+    external: true
