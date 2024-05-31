@@ -1,0 +1,107 @@
+---
+resolve_dns: false
+interval: 3600
+use_syslog: false
+debug: false
+threads: 30
+timeout: 60
+retries: 3
+prompt: !ruby/regexp /^([\w.@-]+[#>]\s?)$/
+rest: 0.0.0.0:8888
+next_adds_job: false
+groups:
+  aireos:
+    username: ****
+    password: ****
+  tplink:
+    username: ****
+    password: ****
+    vars:
+      enable: ""
+  cisco:
+    username: ****
+    password: ****
+    vars:
+      enable: ****
+  pfsense:
+    username: ****
+    password: ****
+  pfsense2:
+    username: ****
+    password: ****
+  cisco2:
+    username: ****
+    password: ****
+    vars:
+      enable: ****
+  mikrotik:
+    username: ****
+    password: ****
+  ubiquity:
+    username: ****
+    password: ****
+  zyxel:
+    username: ****
+    password: ****
+
+models: {}
+pid: "~/.config/oxidized/pid"
+crash:
+  directory: "~/.config/oxidized/crashes"
+  hostnames: false
+
+stats:
+  history_size: 10
+
+input:
+  default: ssh
+  debug: false
+  ssh:
+    secure: false
+    log: "~/.config/oxidized/logs/ssh.log"
+  ftp:
+    passive: true
+  utf8_encoded: true
+
+output:
+  default: git
+  debug: false
+  git:
+    user: oxidized
+    email: ****@gmail.com
+    repo: "~/.config/oxidized/configs/devices.git"
+    branch: "main"
+    single_repo: true
+
+source:
+  default: csv
+  csv:
+    file: "~/.config/oxidized/router.db"
+    delimiter: !ruby/regexp /:/
+    map:
+      name: 0
+      ip: 1
+      model: 2
+      group: 3
+    gpg: false
+
+model_map:
+  juniper: junos
+  cisco: ios
+  iosxe: iosxe
+  nxos: nxos
+  asa: asa
+  aireos: aireos
+  tplink: tplink
+  pfsense: pfsense
+  mikrotik: routeros
+  ubiquity: airos
+  zyxel: zynosgs
+
+hooks:
+  push_to_remote:
+    type: githubrepo
+    events: [post_store]
+    remote_repo: http://gogs_container_IP:3000/oxidized/configs.git
+    username: "oxidized"
+    password: "token"
