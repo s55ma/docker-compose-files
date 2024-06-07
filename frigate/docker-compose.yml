@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    image: ghcr.io/blakeblackshear/frigate:0.13.2
+    shm_size: "512mb" # update for your cameras based on calculation above
+    devices:
+      - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+      - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /root/config.yml:/config/config.yml:rw
+      - /media/4tb_drive:/media/frigate
+      - /root/db:/db:rw
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      - "5000:5000" # WebGUI
+      - "1935:1935" # RTMP feeds
+      - "1883:1883" # MQTT
+      - "8554:8554" # RTSP Restream
+      - "8555:8555" # WebRTC
+      - "1984:1984" # Go2rtc
+    environment:
+      FRIGATE_RTSP_PASSWORD: "test1234"
