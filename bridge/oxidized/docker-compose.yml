@@ -1,0 +1,26 @@
+version: "3"
+services:
+  oxidized:
+    restart: always
+    image: oxidized/oxidized:latest
+    container_name: oxidized
+    environment:
+      CONFIG_RELOAD_INTERVAL: 86400
+    volumes:
+       - ./data:/home/oxidized/.config/oxidized/
+       - ./data/ssh/id_rsa.pub:/home/oxidized/.ssh/id_rsa.pub:ro
+       - ./data/ssh/id_rsa:/home/oxidized/.ssh/id_rsa:ro
+       - ./data/ssh/known_hosts:/home/oxidized/.ssh/known_hosts:ro
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    container_name: nginx_oxidized
+    ports:
+      - 444:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - oxidized
