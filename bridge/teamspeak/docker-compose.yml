@@ -1,0 +1,42 @@
+version: '3.1'
+services:
+  teamspeak:
+    image: teamspeak:latest
+    container_name: teamspeak
+    restart: always
+    ports:
+      - 9987:9987/udp
+      - 10011:10011
+      - 30033:30033
+    environment:
+      TS3SERVER_LICENSE: accept
+    volumes:
+      - ./data:/var/ts3server
+      - ./data/run:/var/run/ts3server
+      - ./data/logs:/var/ts3server/logs
+
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun_teamspeak
+    command: serve
+    volumes:
+      - /run/user/1002/docker.sock:/var/run/docker.sock
+      - ./diun:/data # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=gmailuser"
+      - "DIUN_NOTIF_MAIL_USERNAME=gmail"
+      - "DIUN_NOTIF_MAIL_PASSWORD=pass"
+      - "DIUN_NOTIF_MAIL_FROM=emailfrom@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=emailto@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
+    restart: unless-stopped
