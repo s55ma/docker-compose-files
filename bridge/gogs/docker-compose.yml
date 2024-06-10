@@ -14,6 +14,8 @@ services:
       image: gogs/gogs:latest
       container_name: gogs
       restart: always
+      ports:
+        - 22:22
       links:
        - postgres
       environment:
