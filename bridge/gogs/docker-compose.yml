@@ -1,0 +1,63 @@
+services:
+    postgres:
+      image: postgres:9.5
+      container_name: postgres_gogs
+      restart: always
+      environment:
+       - POSTGRES_USER=dbuser
+       - POSTGRES_PASSWORD=dbpass
+       - POSTGRES_DB=gogs
+      volumes:
+       - ./data/db:/var/lib/postgresql/data
+
+    gogs:
+      image: gogs/gogs:latest
+      container_name: gogs
+      restart: always
+      links:
+       - postgres
+      environment:
+       - "RUN_CROND=true"
+      volumes:
+       - ./data/gogs:/data
+       - ./backup:/backup
+      depends_on:
+       - postgres
+
+    nginx:
+      restart: always
+      image: nginx:latest
+      container_name: nginx_gogs
+      ports:
+       - 443:443
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./nginx/certs:/etc/nginx/certs:ro
+      depends_on:
+        - gogs
+
+    diun:
+      image: crazymax/diun:latest
+      container_name: diun_gogs
+      command: serve
+      volumes:
+        - /run/user/1003/docker.sock:/var/run/docker.sock
+        - ./diun:/data # Path to store Diun's data
+      environment:
+        - "TZ=Europe/Ljubljana"
+        - "LOG_LEVEL=info"
+        - "LOG_JSON=false"
+        - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+        - "DIUN_NOTIF_MAIL_PORT=587"
+        - "DIUN_NOTIF_MAIL_SSL=false"
+        - "DIUN_NOTIF_MAIL_LOCALNAME=user"
+        - "DIUN_NOTIF_MAIL_USERNAME=user@gmail.com"
+        - "DIUN_NOTIF_MAIL_PASSWORD=apppassword"
+        - "DIUN_NOTIF_MAIL_FROM=user@gmail.com"
+        - "DIUN_NOTIF_MAIL_TO=user@gmail.com"
+        - "DIUN_WATCH_WORKERS=20"
+        - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+        - "DIUN_WATCH_JITTER=30s"
+        - "DIUN_PROVIDERS_DOCKER=true"
+        - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
+      restart: unless-stopped
