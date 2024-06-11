@@ -1,0 +1,38 @@
+version: "3.3"
+services:
+  vaultwarden:
+    restart: always
+    container_name: vaultwarden
+    environment:
+      - ROCKET_TLS={certs="/ssl/vaultwarden.crt",key="/ssl/vaultwarden.key"}
+    volumes:
+      - ./data/ssl/:/ssl/
+      - ./data/:/data/
+    ports:
+      - 447:80
+    image: vaultwarden/server:latest
+
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    command: serve
+    volumes:
+      - /run/user/1003/docker.sock:/var/run/docker.sock
+      - ./diun:/diun # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=xxx"
+      - "DIUN_NOTIF_MAIL_USERNAME=rxxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_PASSWORD=xxx"
+      - "DIUN_NOTIF_MAIL_FROM=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=xxx@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCH"
