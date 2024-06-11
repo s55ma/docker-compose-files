@@ -5,6 +5,8 @@ services:
       - ./data:/app/data
     container_name: uptime-kuma
     image: louislam/uptime-kuma:1
+    cap_add:
+      - NET_RAW
 
   nginx:
     restart: always
