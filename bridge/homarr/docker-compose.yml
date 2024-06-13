@@ -1,0 +1,50 @@
+version: "3"
+#---------------------------------------------------------------------#
+#     Homarr - A simple, yet powerful dashboard for your server.     #
+#---------------------------------------------------------------------#
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - ./configs:/app/data/configs
+      - ./icons:/app/public/icons
+      - ./data:/data
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 7575:443
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    command: serve
+    volumes:
+      - /run/user/1002/docker.sock:/var/run/docker.sock
+      - ./diun:/diun # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=xxx"
+      - "DIUN_NOTIF_MAIL_USERNAME=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_PASSWORD=xxx"
+      - "DIUN_NOTIF_MAIL_FROM=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=xxx@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
+    restart: unless-stopped
