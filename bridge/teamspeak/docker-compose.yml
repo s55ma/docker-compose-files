@@ -19,6 +19,7 @@ services:
     image: crazymax/diun:latest
     container_name: diun_teamspeak
     command: serve
+    restart: always
     volumes:
       - /run/user/1002/docker.sock:/var/run/docker.sock
       - ./diun:/data # Path to store Diun's data
@@ -39,4 +40,3 @@ services:
       - "DIUN_WATCH_JITTER=30s"
       - "DIUN_PROVIDERS_DOCKER=true"
       - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
-    restart: unless-stopped
