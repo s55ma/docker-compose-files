@@ -42,6 +42,7 @@ services:
       image: crazymax/diun:latest
       container_name: diun_gogs
       command: serve
+      restart: always
       volumes:
         - /run/user/1003/docker.sock:/var/run/docker.sock
         - ./diun:/data # Path to store Diun's data
