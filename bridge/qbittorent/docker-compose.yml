@@ -1,0 +1,65 @@
+# Mount samba share with the same user as ID defined bellow
+
+version: "3.9"
+services:
+  qbittorrent-nox:
+    # for debugging
+    #cap_add:
+    #- SYS_PTRACE
+    container_name: qbittorrent-nox
+    ports:
+      - "8080:8080"
+    environment:
+      - PAGID=10000
+      - PGID=1000
+      - PUID=1000
+      - QBT_EULA=${QBT_EULA}
+      - QBT_VERSION=${QBT_VERSION}
+      - QBT_WEBUI_PORT=${QBT_WEBUI_PORT}
+      - TZ=Europe/Ljubljana
+      - UMASK=022
+    image: qbittorrentofficial/qbittorrent-nox:${QBT_VERSION}
+    restart: always
+    read_only: false
+    stop_grace_period: 30m
+    tmpfs:
+      - /tmp
+    tty: true
+    volumes:
+      - ${QBT_CONFIG_PATH}:/config
+      - ${QBT_DOWNLOADS_PATH}:/downloads
+
+  diun:
+    image: crazymax/diun:latest
+    container_name: diun_qbittorent
+    command: serve
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./diun:/diun # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=xxx"
+      - "DIUN_NOTIF_MAIL_USERNAME=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_PASSWORD=xxx"
+      - "DIUN_NOTIF_MAIL_FROM=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=xxx@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
+    restart: always
+
+
+volumes:
+  cifs-share:
+    driver: local
+    driver_opts:
+      type: cifs
+      o: username=cifs_user,password=cifs_password,uid=1000,gid=1000
+      device: //192.168.20.5/Torrents
