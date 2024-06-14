@@ -21,7 +21,7 @@ services:
       - ./data:/config
     ports:
       - 6875:443
-    restart: unless-stopped
+    restart: always
     depends_on:
       - bookstack_db
   bookstack_db:
@@ -37,4 +37,30 @@ services:
       - MYSQL_PASSWORD=somepass
     volumes:
       - ./db:/config
-    restart: unless-stopped
+    restart: always
+
+    diun:
+    image: crazymax/diun:latest
+    container_name: diun
+    command: serve
+    restart: always
+    volumes:
+      - /run/user/1010/docker.sock:/var/run/docker.sock
+      - ./diun:/diun # Path to store Diun's data
+    environment:
+      - "TZ=Europe/Ljubljana"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+      - "DIUN_NOTIF_MAIL_HOST=smtp.gmail.com"
+      - "DIUN_NOTIF_MAIL_PORT=587"
+      - "DIUN_NOTIF_MAIL_SSL=false"
+      - "DIUN_NOTIF_MAIL_LOCALNAME=xxx"
+      - "DIUN_NOTIF_MAIL_USERNAME=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_PASSWORD=pxxx"
+      - "DIUN_NOTIF_MAIL_FROM=xxx@gmail.com"
+      - "DIUN_NOTIF_MAIL_TO=xxx@gmail.com"
+      - "DIUN_WATCH_WORKERS=20"
+      - "DIUN_WATCH_SCHEDULE=0 * 11 * * *"
+      - "DIUN_WATCH_JITTER=30s"
+      - "DIUN_PROVIDERS_DOCKER=true"
+      - "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true"
