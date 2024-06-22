@@ -1,0 +1,5 @@
+docker network create -d macvlan \
+    --subnet=172.16.20.0/24 \
+    --gateway=172.16.20.1 \
+    -o parent=ens18 \
+    vlan200
