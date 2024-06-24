@@ -8,23 +8,15 @@ services:
       - ./data:/data
     entrypoint: ["/bin/sh", "-c", "rm -f /data/library.xml /data/library_ready && \
       kiwix-manage /data/library.xml add /data/docs.python.org_en_2024-06.zim && \
-      echo 'Added docs.python.org_en_2024-06.zim' && \
       kiwix-manage /data/library.xml add /data/gutenberg_mul_all_2023-08.zim && \
-      echo 'Added gutenberg_mul_all_2023-08.zim' && \
       kiwix-manage /data/library.xml add /data/stackoverflow.com_en_all_2023-11.zim && \
-      echo 'Added stackoverflow.com_en_all_2023-11.zim' && \
       kiwix-manage /data/library.xml add /data/wikibooks_en_all_maxi_2021-03.zim && \
-      echo 'Added wikibooks_en_all_maxi_2021-03.zim' && \
       kiwix-manage /data/library.xml add /data/wikihow_en_maxi_2023-03.zim && \
-      echo 'Added wikihow_en_maxi_2023-03.zim' && \
       kiwix-manage /data/library.xml add /data/wikipedia_en_all_maxi_2024-01.zim && \
-      echo 'Added wikipedia_en_all_maxi_2024-01.zim' && \
       kiwix-manage /data/library.xml add /data/Wikipedia_en_computer_maxi_2024-05.zim && \
-      echo 'Added Wikipedia_en_computer_maxi_2024-05.zim' && \
       kiwix-manage /data/library.xml add /data/wikipedia_en_computer_maxi_2024-06.zim && \
-      echo 'Added wikipedia_en_computer_maxi_2024-06.zim' && \
       kiwix-manage /data/library.xml add /data/wikipedia_sl_all_maxi_2024-06.zim && \
-      echo 'Added wikipedia_si_all_maxi_2024-06.zim' && \
+      kiwix-manage /data/library.xml add /data/ifixit_en_all_2023-10.zim && \
       touch /data/library_ready"]
 
   kiwix:
